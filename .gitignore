@@ -1,0 +1,27 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Uploads and User Data
+uploads/
+*.pdf
+
+# Node / Frontend
+node_modules/
+dist/
+.DS_Store
+
+# IDEs
+.idea/
+.vscode/
+*.swp
