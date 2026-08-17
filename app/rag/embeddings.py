@@ -1,4 +1,4 @@
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance
@@ -15,10 +15,10 @@ clients = QdrantClient(
     api_key=os.getenv("QDRANT_API_KEY", None)
 )
 
-if not clients.collection_exists("production-rag"):
+if not clients.collection_exists("production-rag-v2"):
 
     clients.create_collection(
-        collection_name="production-rag",
+        collection_name="production-rag-v2",
         vectors_config=VectorParams(
             size=384,
             distance=Distance.COSINE
@@ -26,14 +26,14 @@ if not clients.collection_exists("production-rag"):
     )
 
 
-embedding_model = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
+embedding_model = FastEmbedEmbeddings(
+    model_name="BAAI/bge-small-en-v1.5"
 )
 
 
 vector_db = QdrantVectorStore(
     client=clients,
-    collection_name="production-rag",
+    collection_name="production-rag-v2",
     embedding=embedding_model
 )
 
