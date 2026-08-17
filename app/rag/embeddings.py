@@ -5,8 +5,13 @@ from qdrant_client.models import VectorParams, Distance
 
 import os
 
+
+def get_qdrant_url():
+    return os.getenv("QDRANT_URL", "http://localhost:6333")
+
+
 clients = QdrantClient(
-    url=os.getenv("QDRANT_URL", "http://host.docker.internal:6333"),
+    url=get_qdrant_url(),
     api_key=os.getenv("QDRANT_API_KEY", None)
 )
 
