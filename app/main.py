@@ -4,8 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.chat import router as chat_router
 from app.rag.embeddings import vector_db
 from services.pdf_services import extract_text, create_chunks
-from app.database import SessionLocal
-from app.models.documents import Document
 
 UPLOAD_DIR = "uploads"
 
@@ -66,16 +64,6 @@ async def upload_file(file: UploadFile = File(...)):
         vector_db.add_documents(chunks)
 
         print("Chunks added to Qdrant")
-
-        db = SessionLocal()
-
-        document = Document(
-            filename=file.filename
-        )
-
-        db.add(document)
-        db.commit()
-        db.close()
 
         if os.path.exists(file_path):
             os.remove(file_path)

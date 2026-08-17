@@ -1,8 +1,6 @@
 fastapi
 uvicorn
 python-multipart
-sqlalchemy
-pymysql
 langchain
 langchain-community
 langchain-huggingface

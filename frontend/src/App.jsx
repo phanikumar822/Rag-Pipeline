@@ -9,8 +9,9 @@ function App() {
     const [loading, setLoading] = useState(false);
     const [asking, setAsking] = useState(false);
 
-    const uploadFile = async () => {
-        if (!file) {
+    const uploadFile = async (selectedFile) => {
+        const fileToUpload = selectedFile || file;
+        if (!fileToUpload) {
             setUploadMessage("Please select a PDF file.");
             return;
         }
@@ -20,7 +21,7 @@ function App() {
             setUploadMessage("");
 
             const formData = new FormData();
-            formData.append("file", file);
+            formData.append("file", fileToUpload);
 
             const response = await fetch(
                 (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000") + "/upload",
@@ -152,9 +153,11 @@ function App() {
                             </h4>
 
                             <p>
-                                {file
-                                    ? "Ready to upload"
-                                    : "PDF files up to your configured limit"}
+                                {loading
+                                    ? "Uploading..."
+                                    : file
+                                        ? "File selected"
+                                        : "PDF files up to your configured limit"}
                             </p>
 
                             <label className="choose-btn">
@@ -162,22 +165,19 @@ function App() {
                                 <input
                                     type="file"
                                     accept=".pdf"
-                                    onChange={(e) =>
-                                        setFile(e.target.files[0])
-                                    }
+                                    onChange={(e) => {
+                                        const selected = e.target.files[0];
+                                        setFile(selected);
+                                        if (selected) {
+                                            uploadFile(selected);
+                                        }
+                                    }}
                                 />
                             </label>
 
                         </div>
 
-                        <button
-                            className="primary-btn"
-                            onClick={uploadFile}
-                            disabled={loading}
-                        >
-                            {loading ? "Uploading..." : "Upload document"}
-                            <span>→</span>
-                        </button>
+
 
                         {uploadMessage && (
                             <div className="message">
