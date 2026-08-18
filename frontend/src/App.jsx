@@ -5,6 +5,7 @@ function App() {
     const [file, setFile] = useState(null);
     const [question, setQuestion] = useState("");
     const [answer, setAnswer] = useState("");
+    const [sources, setSources] = useState([]);
     const [uploadMessage, setUploadMessage] = useState("");
     const [loading, setLoading] = useState(false);
     const [asking, setAsking] = useState(false);
@@ -58,6 +59,7 @@ function App() {
         try {
             setAsking(true);
             setAnswer("");
+            setSources([]);
 
             const response = await fetch(
                 (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000") + "/chat",
@@ -79,6 +81,9 @@ function App() {
             }
 
             setAnswer(data.answer);
+            if (data.source) {
+                setSources(data.source);
+            }
 
         } catch (error) {
             console.error(error);
@@ -261,6 +266,18 @@ function App() {
                         ) : (
                             <div className="answer-content">
                                 {answer}
+                                {sources && sources.length > 0 && (
+                                    <div style={{ marginTop: "20px", padding: "10px", background: "#f5f5f5", borderRadius: "8px", fontSize: "0.9rem" }}>
+                                        <strong>Sources used:</strong>
+                                        <ul style={{ margin: "5px 0 0 20px" }}>
+                                            {sources.map((src, idx) => (
+                                                <li key={idx}>
+                                                    {src.source ? src.source.replace("uploads\\", "").replace("uploads/", "") : "Unknown"} (Page {src.page + 1})
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         )}
 
