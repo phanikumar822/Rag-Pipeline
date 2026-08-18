@@ -4,34 +4,72 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance
 import os
 
-def get_qdrant_url():
-    return os.getenv("QDRANT_URL", "http://localhost:6333")
 
-clients = QdrantClient(
+# -----------------------------
+# Qdrant Configuration
+# -----------------------------
+
+def get_qdrant_url():
+    return os.getenv(
+        "QDRANT_URL",
+        "http://localhost:6333"
+    )
+
+
+QDRANT_COLLECTION = "production-rag-v3"
+
+
+# -----------------------------
+# Qdrant Client
+# -----------------------------
+
+client = QdrantClient(
     url=get_qdrant_url(),
-    api_key=os.getenv("QDRANT_API_KEY", None)
+    api_key=os.getenv("QDRANT_API_KEY")
 )
 
-if not clients.collection_exists("production-rag-v3"):
-    clients.create_collection(
-        collection_name="production-rag-v3",
+
+# -----------------------------
+# Create Collection if Needed
+# -----------------------------
+
+if not client.collection_exists(QDRANT_COLLECTION):
+    client.create_collection(
+        collection_name=QDRANT_COLLECTION,
         vectors_config=VectorParams(
             size=384,
             distance=Distance.COSINE
         )
     )
 
+
+# -----------------------------
+# HuggingFace Embeddings
+# -----------------------------
+
 embedding_model = HuggingFaceEndpointEmbeddings(
     model="sentence-transformers/all-MiniLM-L6-v2",
     huggingfacehub_api_token=os.getenv("HF_TOKEN")
 )
 
+
+# -----------------------------
+# Qdrant Vector Store
+# -----------------------------
+
 vector_db = QdrantVectorStore(
-    client=clients,
-    collection_name="production-rag-v3",
+    client=client,
+    collection_name=QDRANT_COLLECTION,
     embedding=embedding_model
 )
 
+
+# -----------------------------
+# Retriever
+# -----------------------------
+
 retriever = vector_db.as_retriever(
-    search_kwargs={"k": 3}
+    search_kwargs={
+        "k": 3
+    }
 )
