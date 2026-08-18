@@ -290,8 +290,9 @@ function App() {
 
             {/* FOOTER */}
             <footer>
+                <span>Contributed By Phani</span>
                 <span>Production RAG</span>
-                <span>Built for document search & retrieval</span>
+                <span>Built for to understand the codes</span>
             </footer>
 
         </div>
