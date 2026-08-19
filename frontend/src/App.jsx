@@ -290,9 +290,9 @@ function App() {
 
             {/* FOOTER */}
             <footer>
-                <span>Contributed By Phani</span>
-                <span>Production RAG</span>
-                <span>Built for to understand the codes</span>
+                <span><b>ontributed By Phani Kumar</b>C</span>
+                <span>Special thanks to Rahul Pujari, Akhil Annaluri, Induri Risheendra</span>
+                <span>Built for to understand the documents</span>
             </footer>
 
         </div>
