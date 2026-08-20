@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File,HTTPException
 import os
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.chat import router as chat_router
-from app.rag.embeddings import vector_db
+from app.rag.embeddings import vector_db, client, QDRANT_COLLECTION, VectorParams, Distance
 from services.pdf_services import extract_text, create_chunks
 
 UPLOAD_DIR = "uploads"
@@ -60,10 +60,22 @@ async def upload_file(file: UploadFile = File(...)):
 
         print("Number of chunks:", len(chunks))
 
+        # Recreate collection to wipe old documents
+        if client.collection_exists(QDRANT_COLLECTION):
+            client.delete_collection(QDRANT_COLLECTION)
+
+        client.create_collection(
+            collection_name=QDRANT_COLLECTION,
+            vectors_config=VectorParams(
+                size=384,
+                distance=Distance.COSINE
+            )
+        )
+
         # Add chunks to Qdrant
         vector_db.add_documents(chunks)
 
-        print("Chunks added to Qdrant")
+        print("Chunks added to Qdrant (fresh collection)")
 
         if os.path.exists(file_path):
             os.remove(file_path)
